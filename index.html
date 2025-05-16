@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TradeSync - Trouvez des affaires fiables</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body { background-color: #f8f9fa; }
+        .search-container { margin-top: 20px; }
+        .result-card { margin-bottom: 15px; }
+        .reliability-score { font-weight: bold; color: #28a745; }
+        .chat-btn, .details-btn { margin-top: 10px; }
+        .platform-badge { font-size: 0.8em; background-color: #007bff; color: white; padding: 2px 6px; border-radius: 3px; }
+        .ricardo-badge { background-color: #ff6200; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 class="text-center mt-4">TradeSync</h1>
+        <p class="text-center">Trouvez les meilleures affaires sur Ricardo, Tutti, Marketplace et plus</p>
+        
+        <!-- Barre de recherche -->
+        <div class="search-container">
+            <div class="input-group mb-3">
+                <input type="text" id="searchInput" class="form-control" placeholder="Ex. : Vélo <200 CHF Genève">
+                <button class="btn btn-primary" onclick="search()">Rechercher</button>
+            </div>
+        </div>
+
+        <!-- Résultats -->
+        <div id="results" class="row"></div>
+    </div>
+
+    <script>
+        // Données mockées simulant Ricardo, Tutti, Marketplace
+        const mockData = [
+            {
+                id: 1,
+                title: "Vélo de course d’occasion",
+                price: "190 CHF",
+                location: "Genève",
+                platform: "Ricardo",
+                category: "vélo",
+                reliability: { 
+                    score: 4.9, 
+                    details: "150 ventes (Ricardo: 120, Marketplace: 30), 97% positifs, actif depuis 2022, 1 plainte résolue",
+                    notes: 4.9, 
+                    sales: 150, 
+                    complaints: 1 
+                }
+            },
+            {
+                id: 2,
+                title: "Vélo électrique",
+                price: "195 CHF",
+                location: "Lausanne",
+                platform: "Tutti",
+                category: "vélo",
+                reliability: { 
+                    score: 4.5, 
+                    details: "50 ventes (Tutti: 40, Marketplace: 10), 90% positifs, actif depuis 2023, 2 plaintes résolues",
+                    notes: 4.6, 
+                    sales: 50, 
+                    complaints: 2 
+                }
+            },
+            {
+                id: 3,
+                title: "Vélo pliable d’occasion",
+                price: "170 CHF",
+                location: "Genève",
+                platform: "Marketplace",
+                category: "vélo",
+                reliability: { 
+                    score: 3.2, 
+                    details: "20 ventes (Marketplace: 20), 80% positifs, actif depuis 2024, 3 plaintes",
+                    notes: 3.5, 
+                    sales: 20, 
+                    complaints: 3 
+                }
+            },
+            {
+                id: 4,
+                title: "Smartphone Samsung Galaxy S22",
+                price: "350 CHF",
+                location: "Zurich",
+                platform: "Ricardo",
+                category: "électronique",
+                reliability: { 
+                    score: 4.7, 
+                    details: "200 ventes (Ricardo: 180, eBay: 20), 94% positifs, actif depuis 2021, 2 plaintes",
+                    notes: 4.8, 
+                    sales: 200, 
+                    complaints: 2 
+                }
+            }
+        ];
+
+        // Calcul du score de fiabilité
+        function calculateReliabilityScore(notes, sales, complaints) {
+            const normalizedNotes = notes / 5; // Normaliser sur 1
+            const normalizedSales = Math.min(sales / 200, 1); // Max 200 ventes
+            const normalizedComplaints = Math.max(0, 1 - complaints / 5); // Max 5 plaintes
+            return (0.6 * normalizedNotes + 0.3 * normalizedSales + 0.1 * normalizedComplaints) * 5;
+        }
+
+        // Fonction de recherche
+        function search() {
+            const query = document.getElementById("searchInput").value.toLowerCase();
+            const resultsDiv = document.getElementById("results");
+            resultsDiv.innerHTML = "";
+
+            // Filtrer les annonces (simulation IA)
+            const filteredResults = mockData.filter(item => 
+                item.title.toLowerCase().includes(query.split(" ")[0]) ||
+                item.location.toLowerCase().includes(query) ||
+                item.category.toLowerCase().includes(query)
+            );
+
+            // Afficher les résultats
+            if (filteredResults.length === 0) {
+                resultsDiv.innerHTML = "<p class='text-center'>Aucune annonce trouvée.</p>";
+                return;
+            }
+
+            filteredResults.forEach(item => {
+                const badgeClass = item.platform === "Ricardo" ? "ricardo-badge" : "platform-badge";
+                const card = `
+                    <div class="col-md-4">
+                        <div class="card result-card">
+                            <div class="card-body">
+                                <h5 class="card-title">${item.title}</h5>
+                                <p class="card-text">Prix : ${item.price}</p>
+                                <p class="card-text">Lieu : ${item.location}</p>
+                                <p class="card-text">Plateforme : <span class="${badgeClass}">${item.platform}</span></p>
+                                <p class="card-text reliability-score">Fiabilité : ${item.reliability.score.toFixed(1)}/5</p>
+                                <button class="btn btn-outline-secondary details-btn" onclick="alert('${item.reliability.details}')">Détails vendeur</button>
+                                <button class="btn btn-success chat-btn" onclick="alert('Chat simulé avec le vendeur')">Contacter</button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                resultsDiv.innerHTML += card;
+            });
+        }
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
